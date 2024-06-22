@@ -1,0 +1,100 @@
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+
+const EventRegistrationForm = () => {
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const [submittedData, setSubmittedData] = useState(null);
+
+  const watchGuest = watch('attendingWithGuest', 'No');
+
+  const onSubmit = (data) => {
+    setSubmittedData(data);
+  };
+
+  return (
+    <div className="form-container">
+      <h1>Event Registration Form</h1>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="form-group">
+          <label>Name:</label>
+          <input
+            type="text"
+            {...register('name', { required: 'Name is required' })}
+          />
+          {errors.name && <p className="error">{errors.name.message}</p>}
+        </div>
+
+        <div className="form-group">
+          <label>Email:</label>
+          <input
+            type="email"
+            {...register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                message: 'Invalid email format',
+              },
+            })}
+          />
+          {errors.email && <p className="error">{errors.email.message}</p>}
+        </div>
+
+        <div className="form-group">
+          <label>Age:</label>
+          <input
+            type="number"
+            {...register('age', {
+              required: 'Age is required',
+              min: { value: 1, message: 'Age must be greater than 0' },
+            })}
+          />
+          {errors.age && <p className="error">{errors.age.message}</p>}
+        </div>
+
+        <div className="form-group">
+          <label>Are you attending with a guest?</label>
+          <div>
+            <label>
+              <input
+                type="radio"
+                value="Yes"
+                {...register('attendingWithGuest', { required: true })}
+              />{' '}
+              Yes
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="No"
+                {...register('attendingWithGuest', { required: true })}
+              />{' '}
+              No
+            </label>
+          </div>
+        </div>
+
+        {watchGuest === 'Yes' && (
+          <div className="form-group">
+            <label>Guest Name:</label>
+            <input
+              type="text"
+              {...register('guestName', { required: 'Guest Name is required' })}
+            />
+            {errors.guestName && <p className="error">{errors.guestName.message}</p>}
+          </div>
+        )}
+
+        <button type="submit">Submit</button>
+      </form>
+
+      {submittedData && (
+        <div className="form-summary">
+          <h2>Form Submitted Successfully!</h2>
+          <pre>{JSON.stringify(submittedData, null, 2)}</pre>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EventRegistrationForm;
